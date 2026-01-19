@@ -951,7 +951,7 @@ GameObject:
   - component: {fileID: 8021177216527608641}
   - component: {fileID: 8732653422733234796}
   m_Layer: 5
-  m_Name: mensajes de error
+  m_Name: mensajes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2288,7 +2288,7 @@ GameObject:
   - component: {fileID: 2853700988322771570}
   - component: {fileID: 6237560551314833040}
   m_Layer: 5
-  m_Name: Usuario conectado
+  m_Name: Welcome txt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3630,10 +3630,50 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1703656272523295503, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: mainPanel
+      value: 
+      objectReference: {fileID: 5639007542608616066}
+    - target: {fileID: 1703656272523295503, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: loginPanel
+      value: 
+      objectReference: {fileID: 4668764596143418530}
+    - target: {fileID: 1703656272523295503, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: welcomeText
+      value: 
+      objectReference: {fileID: 6237560551314833040}
+    - target: {fileID: 1703656272523295503, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: registerPanel
+      value: 
+      objectReference: {fileID: 7244805778551723907}
     - target: {fileID: 4156574393898488732, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
       propertyPath: m_Name
       value: Managers
       objectReference: {fileID: 0}
+    - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: loginMessage
+      value: 
+      objectReference: {fileID: 8732653422733234796}
+    - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: loginPassField
+      value: 
+      objectReference: {fileID: 5702341324812824859}
+    - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: loginUserField
+      value: 
+      objectReference: {fileID: 540484413256426208}
+    - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: registerMessage
+      value: 
+      objectReference: {fileID: 6474096029140406297}
+    - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: registerPassField
+      value: 
+      objectReference: {fileID: 547875541948066654}
+    - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: registerUserField
+      value: 
+      objectReference: {fileID: 4209823531620406849}
     - target: {fileID: 5391636657372203754, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
