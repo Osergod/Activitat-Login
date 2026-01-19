@@ -9,34 +9,25 @@ public class DataBase : MonoBehaviour
 
     private void Awake()
     {
-        // IMPORTANT: Utilitzem persistentDataPath perquè sobrevisqui a builds
         dbPath = "URI=file:" + Application.persistentDataPath + "/usuaris.db";
         InitializeDatabase();
     }
 
     private void InitializeDatabase()
     {
-        try
+        using (var conn = new SqliteConnection(dbPath))
         {
-            using (var conn = new SqliteConnection(dbPath))
+            conn.Open();
+            using (var cmd = conn.CreateCommand())
             {
-                conn.Open();
-                using (var cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = @"
-                        CREATE TABLE IF NOT EXISTS Usuaris (
-                            UserID      INTEGER PRIMARY KEY AUTOINCREMENT,
-                            Username    TEXT    UNIQUE NOT NULL,
-                            Password    TEXT    NOT NULL
-                        )";
-                    cmd.ExecuteNonQuery();
-                }
+                cmd.CommandText =
+                @"CREATE TABLE IF NOT EXISTS Usuaris (
+                    UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Username TEXT UNIQUE NOT NULL,
+                    Password TEXT NOT NULL
+                );";
+                cmd.ExecuteNonQuery();
             }
-            Debug.Log("Base de dades inicialitzada correctament");
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("Error creant base de dades: " + e.Message);
         }
     }
 
@@ -53,40 +44,43 @@ public class DataBase : MonoBehaviour
             using (var conn = new SqliteConnection(dbPath))
             {
                 conn.Open();
-                using (var cmd = conn.CreateCommand())
-                {
-                    // Comprovem si ja existeix
-                    cmd.CommandText = "SELECT COUNT(*) FROM Usuaris WHERE Username = @user";
-                    cmd.Parameters.AddWithValue("@user", username);
-                    long count = (long)cmd.ExecuteScalar();
 
+                // Comprovar si existeix
+                using (var checkCmd = conn.CreateCommand())
+                {
+                    checkCmd.CommandText =
+                        "SELECT COUNT(*) FROM Usuaris WHERE Username = @user";
+                    checkCmd.Parameters.AddWithValue("@user", username);
+
+                    long count = (long)checkCmd.ExecuteScalar();
                     if (count > 0)
                         return "Aquest usuari ja existeix";
-
-                    // Registre
-                    cmd.CommandText = "INSERT INTO Usuaris (Username, Password) VALUES (@user, @pass)";
-                    cmd.Parameters.AddWithValue("@user", username);
-                    cmd.Parameters.AddWithValue("@pass", password); // ★ En projecte real → HASHEJA!
-                    cmd.ExecuteNonQuery();
-
-                    return "OK";
                 }
+
+                // Inserir usuari
+                using (var insertCmd = conn.CreateCommand())
+                {
+                    insertCmd.CommandText =
+                        "INSERT INTO Usuaris (Username, Password) VALUES (@user, @pass)";
+                    insertCmd.Parameters.AddWithValue("@user", username);
+                    insertCmd.Parameters.AddWithValue("@pass", password);
+                    insertCmd.ExecuteNonQuery();
+                }
+
+                return "OK";
             }
-        }
-        catch (SqliteException ex)
-        {
-            if (ex.Message.Contains("UNIQUE constraint failed"))
-                return "Aquest usuari ja existeix";
-            return "Error de base de dades: " + ex.Message;
         }
         catch (Exception ex)
         {
-            return "Error inesperat: " + ex.Message;
+            return "Error de base de dades: " + ex.Message;
         }
     }
 
     public (bool success, string message, int userId) LoginUser(string username, string password)
     {
+        if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            return (false, "Usuari i contrasenya obligatoris", -1);
+
         try
         {
             using (var conn = new SqliteConnection(dbPath))
@@ -94,21 +88,17 @@ public class DataBase : MonoBehaviour
                 conn.Open();
                 using (var cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT UserID FROM Usuaris WHERE Username = @user AND Password = @pass";
+                    cmd.CommandText =
+                        "SELECT UserID FROM Usuaris WHERE Username = @user AND Password = @pass";
                     cmd.Parameters.AddWithValue("@user", username);
                     cmd.Parameters.AddWithValue("@pass", password);
 
-                    var result = cmd.ExecuteScalar();
+                    object result = cmd.ExecuteScalar();
 
                     if (result != null)
-                    {
-                        int userId = Convert.ToInt32(result);
-                        return (true, "Login correcte", userId);
-                    }
+                        return (true, "Login correcte", Convert.ToInt32(result));
                     else
-                    {
                         return (false, "Usuari o contrasenya incorrectes", -1);
-                    }
                 }
             }
         }
