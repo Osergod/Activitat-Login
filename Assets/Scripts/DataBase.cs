@@ -1,121 +1,120 @@
-﻿using UnityEngine;
-using System.Data;                // IDbConnection, IDataReader, etc.
-using Mono.Data.Sqlite;           // SqliteConnection, etc.
+﻿using System;
+using UnityEngine;
+using Mono.Data.Sqlite;
+using System.Data;
 
 public class DataBase : MonoBehaviour
 {
-    // Contador que se mantiene entre clics y escenas (si no destruyes el objeto)
-    private int hitCount = 0;
+    private string dbPath;
 
-    // Ruta recomendada: persistentDataPath → funciona en Editor y en builds (Windows, Android, etc.)
-    // En Editor puedes usar Application.dataPath si prefieres, pero persistent es más seguro
-    private string DbPath => "URI=file:" + Application.persistentDataPath + "/MyDatabase.sqlite";
-
-    private void Start()
+    private void Awake()
     {
-        InitializeDatabase();   // Crea tabla + fila inicial si no existen
-        LoadHitCount();         // Carga el valor guardado
-        Debug.Log($"Valor inicial de hits: {hitCount}");
+        // IMPORTANT: Utilitzem persistentDataPath perquè sobrevisqui a builds
+        dbPath = "URI=file:" + Application.persistentDataPath + "/usuaris.db";
+        InitializeDatabase();
     }
 
     private void InitializeDatabase()
     {
-        using (var conn = new SqliteConnection(DbPath))
+        try
         {
-            conn.Open();
-
-            // Crear tabla si no existe
-            using (var cmd = conn.CreateCommand())
+            using (var conn = new SqliteConnection(dbPath))
             {
-                cmd.CommandText = @"
-                    CREATE TABLE IF NOT EXISTS HitCountTableSimple (
-                        id   INTEGER PRIMARY KEY,
-                        hits INTEGER NOT NULL DEFAULT 0
-                    )";
-                cmd.ExecuteNonQuery();
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                        CREATE TABLE IF NOT EXISTS Usuaris (
+                            UserID      INTEGER PRIMARY KEY AUTOINCREMENT,
+                            Username    TEXT    UNIQUE NOT NULL,
+                            Password    TEXT    NOT NULL
+                        )";
+                    cmd.ExecuteNonQuery();
+                }
             }
-
-            // Aseguramos que exista la fila con id = 0
-            using (var cmd = conn.CreateCommand())
-            {
-                cmd.CommandText = @"
-                    INSERT OR IGNORE INTO HitCountTableSimple (id, hits)
-                    VALUES (0, 0)";
-                cmd.ExecuteNonQuery();
-            }
+            Debug.Log("Base de dades inicialitzada correctament");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error creant base de dades: " + e.Message);
         }
     }
 
-    private void LoadHitCount()
+    public string RegisterUser(string username, string password)
     {
-        using (var conn = new SqliteConnection(DbPath))
+        if (string.IsNullOrWhiteSpace(username))
+            return "El nom d'usuari no pot estar buit";
+
+        if (password.Length < 8)
+            return "La contrasenya ha de tenir mínim 8 caràcters";
+
+        try
         {
-            conn.Open();
-
-            using (var cmd = conn.CreateCommand())
+            using (var conn = new SqliteConnection(dbPath))
             {
-                cmd.CommandText = "SELECT hits FROM HitCountTableSimple WHERE id = 0 LIMIT 1";
-
-                var result = cmd.ExecuteScalar();
-                if (result != null && result != DBNull.Value)
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
                 {
-                    hitCount = System.Convert.ToInt32(result);
+                    // Comprovem si ja existeix
+                    cmd.CommandText = "SELECT COUNT(*) FROM Usuaris WHERE Username = @user";
+                    cmd.Parameters.AddWithValue("@user", username);
+                    long count = (long)cmd.ExecuteScalar();
+
+                    if (count > 0)
+                        return "Aquest usuari ja existeix";
+
+                    // Registre
+                    cmd.CommandText = "INSERT INTO Usuaris (Username, Password) VALUES (@user, @pass)";
+                    cmd.Parameters.AddWithValue("@user", username);
+                    cmd.Parameters.AddWithValue("@pass", password); // ★ En projecte real → HASHEJA!
+                    cmd.ExecuteNonQuery();
+
+                    return "OK";
                 }
             }
         }
-    }
-
-    private void SaveHitCount()
-    {
-        using (var conn = new SqliteConnection(DbPath))
+        catch (SqliteException ex)
         {
-            conn.Open();
-
-            using (var cmd = conn.CreateCommand())
-            {
-                cmd.CommandText = @"
-                    UPDATE HitCountTableSimple
-                    SET hits = @newHits
-                    WHERE id = 0";
-
-                var param = cmd.CreateParameter();
-                param.ParameterName = "@newHits";
-                param.Value = hitCount;
-                cmd.Parameters.Add(param);
-
-                cmd.ExecuteNonQuery();
-            }
+            if (ex.Message.Contains("UNIQUE constraint failed"))
+                return "Aquest usuari ja existeix";
+            return "Error de base de dades: " + ex.Message;
+        }
+        catch (Exception ex)
+        {
+            return "Error inesperat: " + ex.Message;
         }
     }
 
-    private void OnMouseDown()
+    public (bool success, string message, int userId) LoginUser(string username, string password)
     {
-        hitCount++;
-        Debug.Log($"Nuevo conteo: {hitCount}");
-
-        SaveHitCount();  // Guardamos inmediatamente
-    }
-
-    // Para debug: ver todo el contenido de la tabla (ejecútalo desde el menú contextual)
-    [ContextMenu("Mostrar todos los datos de la DB")]
-    private void DebugShowAll()
-    {
-        using (var conn = new SqliteConnection(DbPath))
+        try
         {
-            conn.Open();
-
-            using (var cmd = conn.CreateCommand())
+            using (var conn = new SqliteConnection(dbPath))
             {
-                cmd.CommandText = "SELECT * FROM HitCountTableSimple";
-
-                using (var reader = cmd.ExecuteReader())
+                conn.Open();
+                using (var cmd = conn.CreateCommand())
                 {
-                    while (reader.Read())
+                    cmd.CommandText = "SELECT UserID FROM Usuaris WHERE Username = @user AND Password = @pass";
+                    cmd.Parameters.AddWithValue("@user", username);
+                    cmd.Parameters.AddWithValue("@pass", password);
+
+                    var result = cmd.ExecuteScalar();
+
+                    if (result != null)
                     {
-                        Debug.Log($"id: {reader.GetInt32(0)} | hits: {reader.GetInt32(1)}");
+                        int userId = Convert.ToInt32(result);
+                        return (true, "Login correcte", userId);
+                    }
+                    else
+                    {
+                        return (false, "Usuari o contrasenya incorrectes", -1);
                     }
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            return (false, "Error de connexió: " + ex.Message, -1);
         }
     }
 }
