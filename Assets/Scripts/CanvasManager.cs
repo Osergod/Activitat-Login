@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DarkRGBCanvasBackground : MonoBehaviour
+public class CanvasManager : MonoBehaviour
 {
     public Image backgroundImage;
 
