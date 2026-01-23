@@ -21,6 +21,7 @@ public class UILoginRegister : MonoBehaviour
 
     private DataBase db;
     private UIManager uiManager;
+    GameObject lastPanel;
 
     private void Awake()
     {
@@ -80,16 +81,17 @@ public class UILoginRegister : MonoBehaviour
     public void ClosePopup()
     {
         popupPanel.SetActive(false);
+        if (lastPanel != null) lastPanel.SetActive(true);
     }
 
     private void ShowPopup(string message)
     {
         popupText.text = message;
 
-        // Tanquem qualsevol panel actiu abans d'obrir el popup
-        if (loginPanel.activeSelf) loginPanel.SetActive(false);
-        if (registerPanel.activeSelf) registerPanel.SetActive(false);
+        if (loginPanel.activeSelf) lastPanel = loginPanel;
+        if (registerPanel.activeSelf) lastPanel = registerPanel;
 
+        lastPanel.SetActive(false);
         popupPanel.SetActive(true);
     }
 }

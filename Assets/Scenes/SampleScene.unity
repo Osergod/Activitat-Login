@@ -4582,6 +4582,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 787764592}
     - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: loginPanel
+      value: 
+      objectReference: {fileID: 4668764596143418530}
+    - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
       propertyPath: popupPanel
       value: 
       objectReference: {fileID: 1199818537}
@@ -4589,6 +4593,10 @@ PrefabInstance:
       propertyPath: loginMessage
       value: 
       objectReference: {fileID: 8732653422733234796}
+    - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: registerPanel
+      value: 
+      objectReference: {fileID: 7244805778551723907}
     - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
       propertyPath: loginPassField
       value: 
