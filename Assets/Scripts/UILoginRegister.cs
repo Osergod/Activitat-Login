@@ -1,17 +1,23 @@
 ﻿using UnityEngine;
 using TMPro;
+using UnityEngine.UI; // <- Necessari per al Button
 
 public class UILoginRegister : MonoBehaviour
 {
     [Header("Login UI")]
+    [SerializeField] private GameObject loginPanel;
     [SerializeField] private TMP_InputField loginUserField;
     [SerializeField] private TMP_InputField loginPassField;
-    [SerializeField] private TextMeshProUGUI loginMessage;
 
     [Header("Register UI")]
+    [SerializeField] private GameObject registerPanel;
     [SerializeField] private TMP_InputField registerUserField;
     [SerializeField] private TMP_InputField registerPassField;
-    [SerializeField] private TextMeshProUGUI registerMessage;
+
+    [Header("Popup")]
+    [SerializeField] private GameObject popupPanel;
+    [SerializeField] private TextMeshProUGUI popupText;
+    [SerializeField] private Button popupAcceptButton; // Botó d'acceptar
 
     private DataBase db;
     private UIManager uiManager;
@@ -20,6 +26,10 @@ public class UILoginRegister : MonoBehaviour
     {
         db = FindObjectOfType<DataBase>();
         uiManager = FindObjectOfType<UIManager>();
+        popupPanel.SetActive(false);
+
+        // Assignar la funció al botó
+        popupAcceptButton.onClick.AddListener(ClosePopup);
     }
 
     public void OnLoginButton()
@@ -35,12 +45,11 @@ public class UILoginRegister : MonoBehaviour
             PlayerPrefs.SetString("CurrentUsername", user);
             PlayerPrefs.Save();
 
-            loginMessage.text = "";
             uiManager.ShowMain(user);
         }
         else
         {
-            loginMessage.text = result.message;
+            ShowPopup(result.message);
         }
     }
 
@@ -53,11 +62,11 @@ public class UILoginRegister : MonoBehaviour
 
         if (result == "OK")
         {
-            registerMessage.text = "Usuari registrat correctament";
+            ShowPopup("Usuari registrat correctament");
         }
         else
         {
-            registerMessage.text = result;
+            ShowPopup(result);
         }
     }
 
@@ -66,5 +75,21 @@ public class UILoginRegister : MonoBehaviour
         PlayerPrefs.DeleteKey("CurrentUserID");
         PlayerPrefs.DeleteKey("CurrentUsername");
         uiManager.ShowLogin();
+    }
+
+    public void ClosePopup()
+    {
+        popupPanel.SetActive(false);
+    }
+
+    private void ShowPopup(string message)
+    {
+        popupText.text = message;
+
+        // Tanquem qualsevol panel actiu abans d'obrir el popup
+        if (loginPanel.activeSelf) loginPanel.SetActive(false);
+        if (registerPanel.activeSelf) registerPanel.SetActive(false);
+
+        popupPanel.SetActive(true);
     }
 }
