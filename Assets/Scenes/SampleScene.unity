@@ -1865,9 +1865,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7581738943430608631}
+  - component: {fileID: 9018354430862661050}
   - component: {fileID: 7141275467524415344}
   - component: {fileID: 9018354430862661047}
   - component: {fileID: 6229123267217533490}
+  - component: {fileID: 9018354430862661049}
+  - component: {fileID: 9018354430862661048}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -4582,6 +4585,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 787764592}
     - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: loginPanel
+      value: 
+      objectReference: {fileID: 4668764596143418530}
+    - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
       propertyPath: popupPanel
       value: 
       objectReference: {fileID: 1199818537}
@@ -4589,6 +4596,10 @@ PrefabInstance:
       propertyPath: loginMessage
       value: 
       objectReference: {fileID: 8732653422733234796}
+    - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
+      propertyPath: registerPanel
+      value: 
+      objectReference: {fileID: 7244805778551723907}
     - target: {fileID: 4362101149665060035, guid: 3f9da2ca7eb487048863d3048225b71b, type: 3}
       propertyPath: loginPassField
       value: 
@@ -5476,6 +5487,60 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 0
+--- !u!114 &9018354430862661048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539825198641087564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &9018354430862661049
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539825198641087564}
+  m_CullTransparentMesh: 1
+--- !u!114 &9018354430862661050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1539825198641087564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0cce1330cb1943343bb661b41982182e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  backgroundImage: {fileID: 9018354430862661048}
+  speed: 0.3
+  saturation: 0.5
+  brightness: 0.5
 --- !u!224 &9058693186094598440
 RectTransform:
   m_ObjectHideFlags: 0
